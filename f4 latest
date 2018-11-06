@@ -1,0 +1,72 @@
+  METHOD countriesset_get_entityset.
+**TRY.
+*CALL METHOD SUPER->COUNTRIESSET_GET_ENTITYSET
+*  EXPORTING
+*    IV_ENTITY_NAME           =
+*    IV_ENTITY_SET_NAME       =
+*    IV_SOURCE_NAME           =
+*    IT_FILTER_SELECT_OPTIONS =
+*    IS_PAGING                =
+*    IT_KEY_TAB               =
+*    IT_NAVIGATION_PATH       =
+*    IT_ORDER                 =
+*    IV_FILTER_STRING         =
+*    IV_SEARCH_STRING         =
+**    io_tech_request_context  =
+**  IMPORTING
+**    et_entityset             =
+**    es_response_context      =
+*    .
+** CATCH /iwbep/cx_mgw_busi_exception .
+** CATCH /iwbep/cx_mgw_tech_exception .
+**ENDTRY.
+*-----------------------------------------------------------------------------*
+*Type Declaration Start
+    TYPES:
+               BEGIN OF ty_t005t,
+                 land1 TYPE t005t-land1,
+                 landx TYPE t005t-landx,
+                 END OF ty_t005t.
+*Type Declaration End
+*-----------------------------------------------------------------------------*
+*Data Declaration Start
+    DATA: lt_t005t TYPE TABLE OF ty_t005t,
+        lt_so_country TYPE /iwbep/t_cod_select_options.
+
+
+*Field Symbol:
+    FIELD-SYMBOLS:
+    <fs_t005t> LIKE LINE OF lt_t005t,
+    <fs_entityset> LIKE LINE OF et_entityset,
+    <fs_it_filter_select_options> LIKE LINE OF it_filter_select_options.
+
+*Data Declaration End
+*-----------------------------------------------------------------------------*
+*-----------------------------------------------------------------------------*
+*Read Code Start
+
+    READ TABLE it_filter_select_options ASSIGNING <fs_it_filter_select_options> WITH KEY property = 'Value'.
+    IF sy-subrc = 0.
+      lt_so_country = <fs_it_filter_select_options>-select_options.
+    ENDIF.
+
+    SELECT land1 landx
+      FROM t005t
+      INTO TABLE lt_t005t
+      WHERE spras = 'EN'
+      AND landx IN lt_so_country.
+*Read Code End
+*-----------------------------------------------------------------------------*
+*-----------------------------------------------------------------------------*
+*Business Logic Start
+    APPEND INITIAL LINE TO et_entityset ASSIGNING <fs_entityset>.
+    <fs_entityset>-key = ''.
+    <fs_entityset>-value = ''.
+    LOOP AT lt_t005t ASSIGNING <fs_t005t>.
+      APPEND INITIAL LINE TO et_entityset ASSIGNING <fs_entityset>.
+      <fs_entityset>-key = <fs_t005t>-land1.
+      <fs_entityset>-value = <fs_t005t>-landx.
+    ENDLOOP.
+*Business Logic End
+*-----------------------------------------------------------------------------*
+  ENDMETHOD.                    "countriesset_get_entityset
