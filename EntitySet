@@ -1,0 +1,87 @@
+method ZOSP_MBOM_APRSET_GET_ENTITYSET.
+**TRY.
+*CALL METHOD SUPER->ZOSP_MBOM_APRSET_GET_ENTITYSET
+*  EXPORTING
+*    IV_ENTITY_NAME           =
+*    IV_ENTITY_SET_NAME       =
+*    IV_SOURCE_NAME           =
+*    IT_FILTER_SELECT_OPTIONS =
+*    IS_PAGING                =
+*    IT_KEY_TAB               =
+*    IT_NAVIGATION_PATH       =
+*    IT_ORDER                 =
+*    IV_FILTER_STRING         =
+*    IV_SEARCH_STRING         =
+**    io_tech_request_context  =
+**  IMPORTING
+**    et_entityset             =
+**    es_response_context      =
+*    .
+** CATCH /iwbep/cx_mgw_busi_exception .
+** CATCH /iwbep/cx_mgw_tech_exception .
+**ENDTRY.
+
+  DATA : LT_ZPMBOM_ITM     TYPE TABLE OF ZPMBOM_ITM,
+        ES_ENTITYSET       LIKE LINE OF ET_ENTITYSET,
+        LS_ZOSP_NR         TYPE ZOSP_NR,
+        LS_WERKS           TYPE WERKS_D,
+        LS_MATNR           TYPE MATNR,
+        LS_STATUS          TYPE ZOSP_STATUS,
+        LS_ZTOSP_MBOM_ADM  TYPE ZTOSP_MBOM_ADM,
+        LS_KEY_TAB LIKE LINE OF IT_KEY_TAB.
+
+
+  FIELD-SYMBOLS : <FS_ZOSP_MBOM_ITM> LIKE LINE OF LT_ZPMBOM_ITM.
+
+
+  READ TABLE IT_KEY_TAB INTO LS_KEY_TAB WITH KEY NAME = 'Zosp_nr'.
+  IF SY-SUBRC = 0.
+    LS_ZOSP_NR = LS_KEY_TAB-VALUE.
+  ENDIF.
+
+  READ TABLE IT_KEY_TAB INTO LS_KEY_TAB WITH KEY NAME = 'Werks'.
+  IF SY-SUBRC = 0.
+    LS_WERKS = LS_KEY_TAB-VALUE.
+  ENDIF.
+
+  READ TABLE IT_KEY_TAB INTO LS_KEY_TAB WITH KEY NAME = 'Matnr'.
+  IF SY-SUBRC = 0.
+    LS_MATNR = LS_KEY_TAB-VALUE.
+  ENDIF.
+
+
+  CLEAR : LS_STATUS,LS_ZTOSP_MBOM_ADM.
+  SELECT SINGLE * FROM ZTOSP_MBOM_ADM  INTO LS_ZTOSP_MBOM_ADM WHERE ADM_APR EQ SY-UNAME.
+  IF  SY-SUBRC EQ 0.
+    LS_STATUS = 'A1'.
+    SELECT * FROM ZPMBOM_ITM INTO TABLE LT_ZPMBOM_ITM WHERE ZOSP_NR  = LS_ZOSP_NR.
+  ELSE.
+    CLEAR LS_STATUS.
+    LS_STATUS = 'S'.
+    SELECT * FROM ZPMBOM_ITM INTO TABLE LT_ZPMBOM_ITM WHERE ZOSP_NR  = LS_ZOSP_NR.
+  ENDIF.
+
+  LOOP AT LT_ZPMBOM_ITM ASSIGNING <FS_ZOSP_MBOM_ITM>.
+****    es_entityset-werks = <fs_zosp_mbom_itm>-werks.
+****    es_entityset-matnr = <fs_zosp_mbom_itm>-matnr.
+
+    ES_ENTITYSET-AI_GROUP    = <fs_zosp_mbom_itm>-AI_GROUP.
+    ES_ENTITYSET-AI_PRIO     = <fs_zosp_mbom_itm>-AI_PRIO.
+    ES_ENTITYSET-USAGE_PROB  = <fs_zosp_mbom_itm>-USAGE_PROB.
+
+    ES_ENTITYSET-CAI_GROUP   = <fs_zosp_mbom_itm>-CAI_GROUP.
+    ES_ENTITYSET-CAI_PRIO    = <fs_zosp_mbom_itm>-CAI_PRIO.
+    ES_ENTITYSET-CUSAGE_PROB = <fs_zosp_mbom_itm>-CUSAGE_PROB.
+
+    ES_ENTITYSET-PMATNR = <FS_ZOSP_MBOM_ITM>-PMATNR.
+    ES_ENTITYSET-PMENGE = <FS_ZOSP_MBOM_ITM>-PMENGE.
+    ES_ENTITYSET-EMATNR = <FS_ZOSP_MBOM_ITM>-EMATNR.
+    ES_ENTITYSET-CMATNR = <FS_ZOSP_MBOM_ITM>-CMATNR.
+    ES_ENTITYSET-CMENGE = <FS_ZOSP_MBOM_ITM>-CMENGE.
+**    es_entityset-effdat = <fs_zosp_mbom_itm>-effdat.
+    ES_ENTITYSET-REASON = <FS_ZOSP_MBOM_ITM>-REASON.
+    APPEND ES_ENTITYSET TO ET_ENTITYSET.
+    CLEAR ES_ENTITYSET.
+  ENDLOOP.
+
+endmethod.
