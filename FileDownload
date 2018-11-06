@@ -1,0 +1,143 @@
+METHOD /iwbep/if_mgw_appl_srv_runtime~get_stream.
+  DATA : ls_key_tab TYPE LINE OF /iwbep/t_mgw_name_value_pair.
+
+  DATA :ls_key_tab1 LIKE LINE OF it_key_tab,
+        ls_key_tab2 LIKE LINE OF it_key_tab.
+
+  DATA :  ls_header  TYPE ihttpnvp,
+          ls_stream   TYPE ty_s_media_resource.
+
+  DATA : ls_agrno TYPE zlars_hdr_146-agrm_no_i,
+         sno      TYPE zlars_attfinal-sno,
+         flag     TYPE c.
+
+  DATA : ls_header1  TYPE ihttpnvp.
+
+  DATA : ls_attachment2 TYPE zlars_attfinal.
+
+  CASE iv_entity_name.
+    WHEN 'DownloadAtt'.
+
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'AgrmNoI'.
+      IF sy-subrc = 0.
+        ls_agrno = ls_key_tab-value.
+      ENDIF.
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'Sno'.
+      IF sy-subrc = 0.
+        sno = ls_key_tab-value.
+      ENDIF.
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'Flag'.
+      IF sy-subrc = 0.
+        flag = ls_key_tab-value.
+      ENDIF.
+
+      IF ls_agrno IS NOT INITIAL AND sno IS NOT INITIAL.
+
+        IF flag = '1'.
+
+          SELECT SINGLE *
+            FROM zlars_attfinal
+            INTO ls_attachment2
+            WHERE agrm_no_i = ls_agrno
+                AND sno     = sno.
+        ELSEIF flag = '2'.
+          SELECT SINGLE *
+          FROM zlars_attfinal_i
+          INTO ls_attachment2
+          WHERE agrm_no_i = ls_agrno
+              AND sno     = sno.
+        ELSEIF flag = '3'.
+          SELECT SINGLE *
+          FROM zlars_attfinalrq
+          INTO ls_attachment2
+          WHERE agrm_no_i = ls_agrno
+              AND sno     = sno.
+        ENDIF.
+
+
+
+
+*        LS_ATTACHMENT2-FILENAME     = LS_ATTACHMENT3-FILENAME .
+*        LS_ATTACHMENT2-FILE_CONTENT = LS_ATTACHMENT3-FILE_CONTENT.
+*        LS_ATTACHMENT2-MIMETYPE     = LS_ATTACHMENT3-MIMETYPE.
+
+
+
+        IF ls_attachment2 IS NOT INITIAL.
+          ls_stream-value = ls_attachment2-file_content.
+          ls_stream-mime_type = ls_attachment2-mimetype.
+
+          copy_data_to_ref( EXPORTING is_data = ls_stream
+                            CHANGING  cr_data = er_stream ).
+        ENDIF.
+
+        ls_header1-name = 'content-disposition'.
+        CONCATENATE 'outline; filename=' ls_attachment2-filename INTO ls_header1-value.
+        /iwbep/if_mgw_conv_srv_runtime~set_header( ls_header1 ).
+      ENDIF.
+
+    WHEN 'excel_download'.
+****************************************************
+* LOCAL DATA DECLARATIONS
+****************************************************
+      DATA : o_obj TYPE REF TO zcl_lars_system,
+             xl_file TYPE string,
+             text TYPE string,
+             lv_xstring TYPE xstring.
+*****************************************************
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'AgrmNoI'.
+      IF sy-subrc = 0.
+        ls_agrno = ls_key_tab-value.
+      ENDIF.
+      READ TABLE it_key_tab INTO ls_key_tab WITH KEY name = 'Sno'.
+      IF sy-subrc = 0.
+        sno = ls_key_tab-value.
+      ENDIF.
+
+
+      CREATE OBJECT o_obj.
+
+      CALL METHOD o_obj->excel_download
+*        EXPORTING
+*          I_AGGR_INTERNAL = I_AGGR_INTERNAL    " Internal Aggrement Number
+*          I_AGGR_EXTRNAL  = I_AGGR_EXTRNAL    " Agreement Number
+*          FLAG            = FLAG    " Field Storing the Value of a flag
+*          I_FUNCTION      = I_FUNCTION    " Function for LARS System
+*          I_TYOFAGRMNT    = I_TYOFAGRMNT    " Type of Agreement
+*          I_LOCATION      = I_LOCATION    " Location for LARS System
+*          I_DEPARTMENT    = I_DEPARTMENT    " Department for LARS System
+*          I_PARTY2        = I_PARTY2    " Contracting Party  - Address
+*          I_PARTY3        = I_PARTY3    " Contracting Party  - Address
+        IMPORTING
+          xl_file         = xl_file    " Excel file
+        .
+
+      CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
+        EXPORTING
+          text     = xl_file
+*         MIMETYPE = ' '
+*         ENCODING =
+        IMPORTING
+          buffer   = lv_xstring
+        EXCEPTIONS
+          failed   = 1
+          OTHERS   = 2.
+
+
+      ls_stream-value = lv_xstring.
+*  ls_stream-name = 'test'.
+**      ls_stream-mime_type = 'text/csv'.
+      ls_stream-mime_type = 'application/vnd.ms-excel'.
+
+      copy_data_to_ref( EXPORTING is_data = ls_stream
+                        CHANGING  cr_data = er_stream ).
+      ls_header1-name = 'content-disposition'.
+
+      CONCATENATE 'outline; filename=' 'Agrement Info' '.xls' INTO ls_header1-value.
+
+*      CONCATENATE 'outline; filename=' 'test' '.xls' INTO ls_header1-value.
+      /iwbep/if_mgw_conv_srv_runtime~set_header( ls_header1 ).
+    WHEN OTHERS.
+
+  ENDCASE.
+ENDMETHOD.
