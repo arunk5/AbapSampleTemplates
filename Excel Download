@@ -1,0 +1,680 @@
+METHOD EXCEL_DOWNLOAD.
+****************************************************
+*   LOCAL DATA DECLARATIONS
+****************************************************
+  TYPES : BEGIN OF LTY_HDR,
+            AGRM_NO_I  TYPE ZAGRM_NO_I,
+            AGRM_NO	   TYPE ZAGRM_NO,
+            ENTRYFOR_D TYPE CHAR50,
+            LAND1_D    TYPE CHAR50,
+            LOCATION_D TYPE CHAR50,
+            FUNCTION_D TYPE CHAR50,
+          DEPARTMENT_D TYPE CHAR50,
+            DTOFEXU	   TYPE ZDTOFEXU,
+            EFFDT      TYPE ZEFFDT,
+          POFAGGRM_D   TYPE CHAR50,
+            DOFEXP     TYPE ZDOFEXP,
+            ALERT_DT   TYPE ZALERT_DT,
+            ALERTFREQ	 TYPE ZALERTFREQ,
+           PARTY1_ADDR TYPE ZADDR1,
+            AUTH_SIGN1 TYPE ZAUTH_SIGN,
+          DESIGNATION1 TYPE	ZDESIGNATION,
+           EMAIL1	     TYPE AD_SMTPADR,
+           CONTACTNO1	 TYPE ZCONTACTNO,
+           PANNO1      TYPE	ZPANNO,
+           GSTNO1	     TYPE ZGSTNO,
+          PARTY2_ADDR	 TYPE ZADDR1,
+           AUTH_SIGN2	 TYPE ZAUTH_SIGN,
+          DESIGNATION2 TYPE	ZDESIGNATION,
+           EMAIL2	     TYPE AD_SMTPADR,
+           CONTACTNO2	 TYPE ZCONTACTNO,
+           PANNO2      TYPE	ZPANNO,
+           GSTNO2	     TYPE	ZGSTNO,
+           PARTY3_ADDR TYPE	ZADDR1,
+            AUTH_SIGN3 TYPE	ZAUTH_SIGN,
+          DESIGNATION3 TYPE	ZDESIGNATION,
+            EMAIL3     TYPE AD_SMTPADR,
+            CONTACTNO3 TYPE	ZCONTACTNO,
+            PANNO3     TYPE ZPANNO,
+            GSTNO3     TYPE ZGSTNO,
+            SECUDPOSIT TYPE	ZSECUDPOSIT,
+            CONSDIER_D TYPE CHAR50,
+            MAILTO     TYPE AD_SMTPADR,
+            MAILCC     TYPE AD_SMTPADR,
+            MAILTO1	   TYPE AD_SMTPADR,
+            MAILCC1	   TYPE AD_SMTPADR,
+            MAILTO2	   TYPE AD_SMTPADR,
+            MAILCC2	   TYPE AD_SMTPADR,
+         CONSDIER_AMNT TYPE	ZCONSDIER_AMNT,
+          END OF LTY_HDR,
+
+          BEGIN OF LTY_ITM,
+            AGRM_NO_C	 TYPE ZAGRM_NO_I,
+            AGRM_NO_CF TYPE	ZAGRM_NO,
+            AGRM_NO_I	 TYPE ZAGRM_NO_I,
+            AGRM_NO	   TYPE ZAGRM_NO,
+            ENTRYFOR_D TYPE CHAR50,
+            LAND1_D    TYPE CHAR50,
+            LOCATION_D TYPE CHAR50,
+            FUNCTION_D TYPE CHAR50,
+          DEPARTMENT_D TYPE CHAR50,
+            DTOFEXU	   TYPE ZDTOFEXU,
+            EFFDT      TYPE ZEFFDT,
+          POFAGGRM_D   TYPE CHAR50,
+            DOFEXP     TYPE ZDOFEXP,
+            ALERT_DT   TYPE ZALERT_DT,
+            ALERTFREQ	 TYPE ZALERTFREQ,
+           PARTY1_ADDR TYPE ZADDR1,
+            AUTH_SIGN1 TYPE ZAUTH_SIGN,
+          DESIGNATION1 TYPE	ZDESIGNATION,
+           EMAIL1	     TYPE AD_SMTPADR,
+           CONTACTNO1	 TYPE ZCONTACTNO,
+           PANNO1      TYPE	ZPANNO,
+           GSTNO1	     TYPE ZGSTNO,
+          PARTY2_ADDR	 TYPE ZADDR1,
+           AUTH_SIGN2	 TYPE ZAUTH_SIGN,
+          DESIGNATION2 TYPE	ZDESIGNATION,
+           EMAIL2	     TYPE AD_SMTPADR,
+           CONTACTNO2	 TYPE ZCONTACTNO,
+           PANNO2      TYPE	ZPANNO,
+           GSTNO2	     TYPE	ZGSTNO,
+           PARTY3_ADDR TYPE	ZADDR1,
+            AUTH_SIGN3 TYPE	ZAUTH_SIGN,
+          DESIGNATION3 TYPE	ZDESIGNATION,
+            EMAIL3     TYPE AD_SMTPADR,
+            CONTACTNO3 TYPE	ZCONTACTNO,
+            PANNO3     TYPE ZPANNO,
+            GSTNO3     TYPE ZGSTNO,
+            SECUDPOSIT TYPE	ZSECUDPOSIT,
+            CONSDIER   TYPE ZCONSIDER,
+            MAILTO     TYPE AD_SMTPADR,
+            MAILCC     TYPE AD_SMTPADR,
+            MAILTO1	   TYPE AD_SMTPADR,
+            MAILCC1	   TYPE AD_SMTPADR,
+         CONSDIER_AMNT TYPE	ZCONSDIER_AMNT,
+          END OF LTY_ITM,
+
+          BEGIN OF LTY_FINAL,
+            SNO(8)     TYPE C,
+            AGRM_NO_I  TYPE ZAGRM_NO_I,
+            AGRM_NO	   TYPE ZAGRM_NO,
+            AGRM_NO_C	 TYPE ZAGRM_NO_I,
+            AGRM_NO_CF TYPE	ZAGRM_NO,
+            ENTRYFOR_D TYPE CHAR50,
+            LAND1_D    TYPE CHAR50,
+            LOCATION_D TYPE CHAR50,
+            FUNCTION_D TYPE CHAR50,
+          DEPARTMENT_D TYPE CHAR50,
+            DTOFEXU(10)	   TYPE C,
+            EFFDT(10)      TYPE C,
+          POFAGGRM_D   TYPE CHAR50,
+            DOFEXP(10)     TYPE C,
+            ALERT_DT(10)   TYPE C,
+            ALERTFREQ	 TYPE ZALERTFREQ,
+           PARTY1_ADDR TYPE ZADDR1,
+            AUTH_SIGN1 TYPE ZAUTH_SIGN,
+          DESIGNATION1 TYPE	ZDESIGNATION,
+           EMAIL1	     TYPE AD_SMTPADR,
+           CONTACTNO1	 TYPE ZCONTACTNO,
+           PANNO1      TYPE	ZPANNO,
+           GSTNO1	     TYPE ZGSTNO,
+          PARTY2_ADDR	 TYPE ZADDR1,
+           AUTH_SIGN2	 TYPE ZAUTH_SIGN,
+          DESIGNATION2 TYPE	ZDESIGNATION,
+           EMAIL2	     TYPE AD_SMTPADR,
+           CONTACTNO2	 TYPE ZCONTACTNO,
+           PANNO2      TYPE	ZPANNO,
+           GSTNO2	     TYPE	ZGSTNO,
+           PARTY3_ADDR TYPE	ZADDR1,
+            AUTH_SIGN3 TYPE	ZAUTH_SIGN,
+          DESIGNATION3 TYPE	ZDESIGNATION,
+            EMAIL3     TYPE AD_SMTPADR,
+            CONTACTNO3 TYPE	ZCONTACTNO,
+            PANNO3     TYPE ZPANNO,
+            GSTNO3     TYPE ZGSTNO,
+            SECUDPOSIT TYPE	ZSECUDPOSIT,
+            CONSDIER_D TYPE CHAR50,
+            MAILTO     TYPE AD_SMTPADR,
+            MAILCC     TYPE AD_SMTPADR,
+            MAILTO1	   TYPE AD_SMTPADR,
+            MAILCC1	   TYPE AD_SMTPADR,
+         CONSDIER_AMNT TYPE	ZCONSDIER_AMNT,
+          END OF LTY_FINAL.
+
+  DATA : LT_HDR TYPE STANDARD TABLE OF LTY_HDR,
+         LT_ITM TYPE STANDARD TABLE OF LTY_ITM,
+         LT_FNL TYPE STANDARD TABLE OF LTY_FINAL,
+         WA_FINAL TYPE LTY_FINAL,
+         LV_STRING TYPE STRING.
+
+  " Begin of Changes <STRAVIS> 21.06.2018 14:27:12
+  DATA : LO_OBJ TYPE REF TO ZCL_AUTH_CHECK,
+         EX_MSG TYPE OIK_STAT_ICON,
+         IM_HDR TYPE ZLARS_HDR_146.
+  "End of Changes<STRAVIS> 21.06.2018 14:27:12
+
+  FIELD-SYMBOLS : <FS_HDR> TYPE  LTY_HDR,
+                  <FS_FNL> TYPE LTY_FINAL,
+                  <FS_ITM> TYPE LTY_ITM.
+
+
+  DATA : R_AGRNO_TAB  TYPE RANGE OF ZLARS_HDR_146-AGRM_NO_I,
+         R_AGRNO_WA   LIKE LINE  OF R_AGRNO_TAB,
+         R_FUNCTION   TYPE RANGE OF ZLARS_HDR_146-TYOFAGRMNT,
+         R_FUNC_WA    LIKE LINE  OF R_FUNCTION,
+         R_DEPT       TYPE RANGE OF ZLARS_HDR_146-DEPARTMENT,
+         R_DEPT_WA    LIKE LINE  OF R_DEPT,
+         R_TYOFAGR    TYPE RANGE OF ZLARS_HDR_146-TYOFAGRMNT,
+         R_TYOFAGR_WA LIKE LINE  OF R_TYOFAGR,
+         R_LOC        TYPE RANGE OF ZLARS_HDR_146-LOCATION,
+         R_LOC_WA     LIKE LINE  OF R_LOC,
+         R_PARTY2     TYPE RANGE OF ZLARS_HDR_146-PARTY2_ADDR,
+         R_PARTY2_WA  LIKE LINE  OF R_PARTY2,
+         R_PARTY3     TYPE RANGE OF ZLARS_HDR_146-PARTY3_ADDR,
+         R_PARTY3_WA  LIKE LINE  OF R_PARTY3.
+
+  DATA : IDX_C TYPE I,
+         IDX_P TYPE I,
+         LV_P(5) TYPE C,
+         LV_C(5) TYPE C.
+****************************************************
+  IF I_AGGR_INTERNAL IS NOT INITIAL.
+
+    R_AGRNO_WA-LOW =  I_AGGR_INTERNAL.
+    R_AGRNO_WA-SIGN = 'I'.
+    R_AGRNO_WA-OPTION = 'EQ'.
+
+    APPEND R_AGRNO_WA TO R_AGRNO_TAB.
+  ENDIF.
+
+  IF I_FUNCTION IS NOT INITIAL.
+    R_FUNC_WA-LOW =  I_FUNCTION.
+    R_FUNC_WA-SIGN = 'I'.
+    R_FUNC_WA-OPTION = 'EQ'.
+
+    APPEND R_FUNC_WA TO R_FUNCTION.
+  ENDIF.
+
+  IF I_TYOFAGRMNT IS NOT INITIAL.
+    R_TYOFAGR_WA-LOW =  I_TYOFAGRMNT.
+    R_TYOFAGR_WA-SIGN = 'I'.
+    R_TYOFAGR_WA-OPTION = 'EQ'.
+
+    APPEND R_TYOFAGR_WA TO R_TYOFAGR.
+  ENDIF.
+
+  IF I_DEPARTMENT IS NOT INITIAL.
+    R_DEPT_WA-LOW =  I_DEPARTMENT.
+    R_DEPT_WA-SIGN = 'I'.
+    R_DEPT_WA-OPTION = 'EQ'.
+
+    APPEND R_DEPT_WA TO R_DEPT.
+  ENDIF.
+
+  IF I_LOCATION IS NOT INITIAL.
+    R_LOC_WA-LOW =  I_LOCATION.
+    R_LOC_WA-SIGN = 'I'.
+    R_LOC_WA-OPTION = 'EQ'.
+
+    APPEND R_LOC_WA TO R_LOC.
+  ENDIF.
+
+  IF I_PARTY2 IS NOT INITIAL.
+    CONDENSE I_PARTY2.
+    R_PARTY2_WA-LOW =  I_PARTY2.
+    R_PARTY2_WA-SIGN = 'I'.
+    R_PARTY2_WA-OPTION = 'EQ'.
+
+    APPEND R_PARTY2_WA TO R_PARTY2.
+  ENDIF.
+
+  IF I_PARTY3 IS NOT INITIAL.
+    CONDENSE I_PARTY3.
+    R_PARTY3_WA-LOW =  I_PARTY3.
+    R_PARTY3_WA-SIGN = 'I'.
+    R_PARTY3_WA-OPTION = 'EQ'.
+
+    APPEND R_PARTY3_WA TO R_PARTY3.
+  ENDIF.
+
+  SELECT     AGRM_NO_I
+             AGRM_NO
+             ENTRYFOR_D
+             LAND1_D
+             LOCATION_D
+             FUNCTION_D
+           DEPARTMENT_D
+             DTOFEXU
+             EFFDT
+           POFAGGRM_D
+             DOFEXP
+             ALERT_DT
+             ALERTFREQ
+            PARTY1_ADDR
+             AUTH_SIGN1
+           DESIGNATION1
+            EMAIL1
+            CONTACTNO1
+            PANNO1
+            GSTNO1
+           PARTY2_ADDR
+            AUTH_SIGN2
+           DESIGNATION2
+            EMAIL2
+            CONTACTNO2
+            PANNO2
+            GSTNO2
+            PARTY3_ADDR
+             AUTH_SIGN3
+           DESIGNATION3
+             EMAIL3
+             CONTACTNO3
+             PANNO3
+             GSTNO3
+             SECUDPOSIT
+             CONSDIER_D
+             MAILTO
+             MAILCC
+             MAILTO1
+             MAILCC1
+             MAILTO2
+             MAILCC2
+          CONSDIER_AMNT
+    FROM ZLARS_HDR_146
+    INTO TABLE LT_HDR
+    WHERE AGRM_NO_I IN R_AGRNO_TAB
+    AND TYOFAGRMNT IN R_TYOFAGR
+    AND LOCATION   IN R_LOC
+    AND FUNCTION   IN R_FUNCTION
+    AND DEPARTMENT IN R_DEPT
+    AND PARTY2_ADDR IN R_PARTY2
+    AND PARTY3_ADDR IN R_PARTY3.
+
+  IF LT_HDR IS NOT INITIAL.
+
+    SELECT       AGRM_NO_C
+                 AGRM_NO_CF
+                 AGRM_NO_I
+                 AGRM_NO
+                 ENTRYFOR_D
+                 LAND1_D
+                 LOCATION_D
+                 FUNCTION_D
+               DEPARTMENT_D
+                 DTOFEXU
+                 EFFDT
+               POFAGGRM_D
+                 DOFEXP
+                 ALERT_DT
+                 ALERTFREQ
+                PARTY1_ADDR
+                 AUTH_SIGN1
+               DESIGNATION1
+                EMAIL1
+                CONTACTNO1
+                PANNO1
+                GSTNO1
+               PARTY2_ADDR
+                AUTH_SIGN2
+               DESIGNATION2
+                EMAIL2
+                CONTACTNO2
+                PANNO2
+                GSTNO2
+                PARTY3_ADDR
+                 AUTH_SIGN3
+               DESIGNATION3
+                 EMAIL3
+                 CONTACTNO3
+                 PANNO3
+                 GSTNO3
+                 SECUDPOSIT
+                 CONSDIER
+                 MAILTO
+                 MAILCC
+                 MAILTO1
+                 MAILCC1
+              CONSDIER_AMNT
+      FROM ZLARS_ITM_146
+      INTO TABLE LT_ITM
+      FOR ALL ENTRIES IN LT_HDR
+      WHERE AGRM_NO_I = LT_HDR-AGRM_NO_I
+        AND AGRM_NO   = LT_HDR-AGRM_NO.
+  ENDIF.
+  SORT LT_ITM BY AGRM_NO_I.
+  " Begin of Changes <STRAVIS> 21.06.2018 14:27:49
+  CREATE OBJECT LO_OBJ.
+  "End of Changes<STRAVIS> 21.06.2018 14:27:49
+  LOOP AT LT_HDR ASSIGNING <FS_HDR>.
+    MOVE-CORRESPONDING <FS_HDR> TO IM_HDR.
+    CLEAR EX_MSG.
+    CALL METHOD LO_OBJ->LARS_MIS_CHECK
+      EXPORTING
+        IM_UNAME = SY-UNAME    " User Name
+        IM_HDR   = IM_HDR    " Agreement Entry Table Information
+      IMPORTING
+        EX_MSG   = EX_MSG.
+    IF EX_MSG IS NOT INITIAL.
+      CONTINUE.
+    ENDIF.
+    IDX_P = IDX_P + 1.
+    LV_C = IDX_P.
+    CONDENSE LV_C.
+    APPEND INITIAL LINE TO LT_FNL ASSIGNING <FS_FNL>.
+    <FS_FNL>-SNO       = IDX_P.
+    <FS_FNL>-AGRM_NO_I = <FS_HDR>-AGRM_NO_I.
+    <FS_FNL>-AGRM_NO   = <FS_HDR>-AGRM_NO.
+*    <FS_FNL>-AGRM_NO_C = <FS_HDR>-AGRM_NO_C.
+*    <FS_FNL>-AGRM_NO_CF = <FS_HDR>-AGRM_NO_CF.
+    <FS_FNL>-ENTRYFOR_D = <FS_HDR>-ENTRYFOR_D.
+    <FS_FNL>-LAND1_D    = <FS_HDR>-LAND1_D.
+    <FS_FNL>-LOCATION_D = <FS_HDR>-LOCATION_D.
+    <FS_FNL>-FUNCTION_D = <FS_HDR>-FUNCTION_D.
+    <FS_FNL>-DEPARTMENT_D = <FS_HDR>-DEPARTMENT_D.
+
+    CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+      EXPORTING
+        DATE_INTERNAL            = <FS_HDR>-DTOFEXU
+      IMPORTING
+        DATE_EXTERNAL            = <FS_FNL>-DTOFEXU
+      EXCEPTIONS
+        DATE_INTERNAL_IS_INVALID = 1
+        OTHERS                   = 2.
+    IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+*    <FS_FNL>-DTOFEXU    = <FS_HDR>-DTOFEXU.
+    CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+      EXPORTING
+        DATE_INTERNAL            = <FS_HDR>-EFFDT
+      IMPORTING
+        DATE_EXTERNAL            = <FS_FNL>-EFFDT
+      EXCEPTIONS
+        DATE_INTERNAL_IS_INVALID = 1
+        OTHERS                   = 2.
+    IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    ENDIF.
+*    <FS_FNL>-EFFDT      = <FS_HDR>-EFFDT.
+    <FS_FNL>-POFAGGRM_D   = <FS_HDR>-POFAGGRM_D.
+    CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+      EXPORTING
+        DATE_INTERNAL            = <FS_HDR>-DOFEXP
+      IMPORTING
+        DATE_EXTERNAL            = <FS_FNL>-DOFEXP
+      EXCEPTIONS
+        DATE_INTERNAL_IS_INVALID = 1
+        OTHERS                   = 2.
+    IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+*    <FS_FNL>-DOFEXP     = <FS_HDR>-DOFEXP.
+    CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+      EXPORTING
+        DATE_INTERNAL            = <FS_HDR>-ALERT_DT
+      IMPORTING
+        DATE_EXTERNAL            = <FS_FNL>-ALERT_DT
+      EXCEPTIONS
+        DATE_INTERNAL_IS_INVALID = 1
+        OTHERS                   = 2.
+    IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+*    <FS_FNL>-ALERT_DT   = <FS_HDR>-ALERT_DT.
+    <FS_FNL>-ALERTFREQ  = <FS_HDR>-ALERTFREQ.
+    <FS_FNL>-PARTY1_ADDR = <FS_HDR>-PARTY1_ADDR.
+    <FS_FNL>-AUTH_SIGN1 = <FS_HDR>-AUTH_SIGN1.
+    <FS_FNL>-DESIGNATION1 = <FS_HDR>-DESIGNATION1.
+    <FS_FNL>-EMAIL1      = <FS_HDR>-EMAIL1.
+    <FS_FNL>-CONTACTNO1  = <FS_HDR>-CONTACTNO1.
+    <FS_FNL>-PANNO1      = <FS_HDR>-PANNO1.
+    <FS_FNL>-GSTNO1      = <FS_HDR>-GSTNO1.
+    <FS_FNL>-PARTY2_ADDR  = <FS_HDR>-PARTY2_ADDR.
+    <FS_FNL>-AUTH_SIGN2  = <FS_HDR>-AUTH_SIGN2.
+    <FS_FNL>-DESIGNATION2 = <FS_HDR>-DESIGNATION2.
+    <FS_FNL>-EMAIL2      = <FS_HDR>-EMAIL2.
+    <FS_FNL>-CONTACTNO2  = <FS_HDR>-CONTACTNO2.
+    <FS_FNL>-PANNO2      = <FS_HDR>-PANNO2.
+    <FS_FNL>-GSTNO2      = <FS_HDR>-GSTNO2.
+    <FS_FNL>-PARTY3_ADDR = <FS_HDR>-PARTY3_ADDR.
+    <FS_FNL>-AUTH_SIGN3 = <FS_HDR>-AUTH_SIGN3.
+    <FS_FNL>-DESIGNATION3 = <FS_HDR>-DESIGNATION3.
+    <FS_FNL>-EMAIL3     = <FS_HDR>-EMAIL3.
+    <FS_FNL>-CONTACTNO3 = <FS_HDR>-CONTACTNO3.
+    <FS_FNL>-PANNO3     = <FS_HDR>-PANNO3.
+    <FS_FNL>-GSTNO3     = <FS_HDR>-GSTNO3.
+    <FS_FNL>-SECUDPOSIT = <FS_HDR>-SECUDPOSIT.
+    <FS_FNL>-CONSDIER_D = <FS_HDR>-CONSDIER_D.
+    <FS_FNL>-MAILTO     = <FS_HDR>-MAILTO.
+    <FS_FNL>-MAILCC     = <FS_HDR>-MAILCC.
+    <FS_FNL>-MAILTO1    = <FS_HDR>-MAILTO1.
+    <FS_FNL>-MAILCC1    = <FS_HDR>-MAILCC1.
+    <FS_FNL>-CONSDIER_AMNT = <FS_HDR>-CONSDIER_AMNT.
+
+*    APPEND <FS_FNL> TO LT_FNL.
+    CLEAR :LV_P , IDX_C.
+    LOOP AT LT_ITM   ASSIGNING <FS_ITM> WHERE AGRM_NO_I = <FS_HDR>-AGRM_NO_I.
+      APPEND INITIAL LINE TO LT_FNL ASSIGNING <FS_FNL>.
+      IDX_C = IDX_C + 1.
+      LV_P = IDX_C.
+      CONDENSE LV_P.
+      CONCATENATE LV_C '.' LV_P  INTO <FS_FNL>-SNO.
+      CONDENSE <FS_FNL>-SNO.
+*      <FS_FNL>-SNO          = IDX_C.
+      <FS_FNL>-AGRM_NO_I    = <FS_ITM>-AGRM_NO_I.
+      <FS_FNL>-AGRM_NO      = <FS_ITM>-AGRM_NO.
+      <FS_FNL>-AGRM_NO_C    = <FS_ITM>-AGRM_NO_C.
+      <FS_FNL>-AGRM_NO_CF   = <FS_ITM>-AGRM_NO_CF.
+      <FS_FNL>-ENTRYFOR_D   = <FS_ITM>-ENTRYFOR_D.
+      <FS_FNL>-LAND1_D      = <FS_ITM>-LAND1_D.
+      <FS_FNL>-LOCATION_D   = <FS_ITM>-LOCATION_D.
+      <FS_FNL>-FUNCTION_D   = <FS_ITM>-FUNCTION_D.
+      <FS_FNL>-DEPARTMENT_D = <FS_ITM>-DEPARTMENT_D.
+*DATA DATE_INTERNAL TYPE SY-DATUM.
+
+      CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+        EXPORTING
+          DATE_INTERNAL            = <FS_ITM>-DTOFEXU
+        IMPORTING
+          DATE_EXTERNAL            = <FS_FNL>-DTOFEXU
+        EXCEPTIONS
+          DATE_INTERNAL_IS_INVALID = 1
+          OTHERS                   = 2.
+      IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+      ENDIF.
+
+*      <FS_FNL>-DTOFEXU      = <FS_ITM>-DTOFEXU.
+*      <FS_FNL>-EFFDT        = <FS_ITM>-EFFDT.
+      CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+        EXPORTING
+          DATE_INTERNAL            = <FS_ITM>-EFFDT
+        IMPORTING
+          DATE_EXTERNAL            = <FS_FNL>-EFFDT
+        EXCEPTIONS
+          DATE_INTERNAL_IS_INVALID = 1
+          OTHERS                   = 2.
+      IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+      ENDIF.
+
+      <FS_FNL>-POFAGGRM_D   = <FS_ITM>-POFAGGRM_D.
+*      <FS_FNL>-DOFEXP       = <FS_ITM>-DOFEXP.
+      CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+        EXPORTING
+          DATE_INTERNAL            = <FS_ITM>-DOFEXP
+        IMPORTING
+          DATE_EXTERNAL            = <FS_FNL>-DOFEXP
+        EXCEPTIONS
+          DATE_INTERNAL_IS_INVALID = 1
+          OTHERS                   = 2.
+      IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+      ENDIF.
+
+*      <FS_FNL>-ALERT_DT     = <FS_ITM>-ALERT_DT.
+      CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+        EXPORTING
+          DATE_INTERNAL            = <FS_ITM>-ALERT_DT
+        IMPORTING
+          DATE_EXTERNAL            = <FS_FNL>-ALERT_DT
+        EXCEPTIONS
+          DATE_INTERNAL_IS_INVALID = 1
+          OTHERS                   = 2.
+      IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+      ENDIF.
+
+      <FS_FNL>-ALERTFREQ    = <FS_ITM>-ALERTFREQ.
+      <FS_FNL>-PARTY1_ADDR  = <FS_ITM>-PARTY1_ADDR.
+      <FS_FNL>-AUTH_SIGN1   = <FS_ITM>-AUTH_SIGN1.
+      <FS_FNL>-DESIGNATION1 = <FS_ITM>-DESIGNATION1.
+      <FS_FNL>-EMAIL1       = <FS_ITM>-EMAIL1.
+      <FS_FNL>-CONTACTNO1   = <FS_ITM>-CONTACTNO1.
+      <FS_FNL>-PANNO1       = <FS_ITM>-PANNO1.
+      <FS_FNL>-GSTNO1       = <FS_ITM>-GSTNO1.
+      <FS_FNL>-PARTY2_ADDR  = <FS_ITM>-PARTY2_ADDR.
+      <FS_FNL>-AUTH_SIGN2   = <FS_ITM>-AUTH_SIGN2.
+      <FS_FNL>-DESIGNATION2 = <FS_ITM>-DESIGNATION2.
+      <FS_FNL>-EMAIL2       = <FS_ITM>-EMAIL2.
+      <FS_FNL>-CONTACTNO2   = <FS_ITM>-CONTACTNO2.
+      <FS_FNL>-PANNO2       = <FS_ITM>-PANNO2.
+      <FS_FNL>-GSTNO2       = <FS_ITM>-GSTNO2.
+      <FS_FNL>-PARTY3_ADDR  = <FS_ITM>-PARTY3_ADDR.
+      <FS_FNL>-AUTH_SIGN3   = <FS_ITM>-AUTH_SIGN3.
+      <FS_FNL>-DESIGNATION3 = <FS_ITM>-DESIGNATION3.
+      <FS_FNL>-EMAIL3       = <FS_ITM>-EMAIL3.
+      <FS_FNL>-CONTACTNO3   = <FS_ITM>-CONTACTNO3.
+      <FS_FNL>-PANNO3       = <FS_ITM>-PANNO3.
+      <FS_FNL>-GSTNO3       = <FS_ITM>-GSTNO3.
+      <FS_FNL>-SECUDPOSIT   = <FS_ITM>-SECUDPOSIT.
+*      <FS_FNL>-CONSDIER_D = <FS_ITM>-CONSDIER_D.
+      <FS_FNL>-MAILTO       = <FS_ITM>-MAILTO.
+      <FS_FNL>-MAILCC       = <FS_ITM>-MAILCC.
+      <FS_FNL>-MAILTO1      = <FS_ITM>-MAILTO1.
+      <FS_FNL>-MAILCC1      = <FS_ITM>-MAILCC1.
+      <FS_FNL>-CONSDIER_AMNT = <FS_ITM>-CONSDIER_AMNT.
+
+*      APPEND <FS_FNL> TO LT_FNL.
+    ENDLOOP.
+
+  ENDLOOP.
+
+
+*&---------------------------------------------------------------------*
+*& build xl file
+*&---------------------------------------------------------------------*
+  CONCATENATE
+               'Srno'                            CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Agrement Number'                 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Child Aggrement Number'          CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+          ""     'Entry For'                       CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Country'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Location'                        CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Function'                        CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Department'                      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Date of Execution'               CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Effective Date as per HMCL'      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Period of Agreement'             CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Date Of Expiry'                  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""    'Alert Date'                      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+          ""     'Alert Frequency'                 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Contracting Party 1'             CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Authorised Signatory 1'          CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+        ""       'Designation  '                   CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'E-Mail Address'                  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+        ""       'Contact no.'                     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+        ""       'PAN No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+        ""       'GST No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Contracting Party 2'             CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Authorised Signatory 2'          CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+        ""       'Designation  '                   CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'E-Mail Address'                  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Contact no.'                     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""  'PAN No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""    'GST No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Contracting Party 3'             CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Authorised Signatory 3'          CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+         ""      'Designation'                     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'E-Mail Address'                  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Contact no.'                     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+       ""        'PAN No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+       ""        'GST No.'                         CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Security Deposit'                CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               'Consider Amount'                 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+
+               CL_ABAP_CHAR_UTILITIES=>NEWLINE
+               INTO XL_FILE.
+
+
+****************************************************
+* LOCAL DATA DECLARATIONS
+****************************************************
+  DATA : LV_SNO TYPE STRING,
+         LV_SECUDPT TYPE STRING,
+         LV_CNAMNT TYPE STRING.
+****************************************************
+  LOOP AT LT_FNL ASSIGNING <FS_FNL>.
+    CLEAR :LV_SECUDPT,LV_CNAMNT,LV_SNO.
+    LV_SNO     = <FS_FNL>-SNO.
+    CONDENSE LV_SNO.
+    LV_SECUDPT = <FS_FNL>-SECUDPOSIT.
+    LV_CNAMNT  = <FS_FNL>-CONSDIER_AMNT.
+    CONDENSE : LV_SNO , LV_SECUDPT , LV_CNAMNT.
+    CONCATENATE XL_FILE
+                 LV_SNO               CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+               ""  <FS_FNL>-AGRM_NO_I   CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-AGRM_NO     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+              ""   <FS_FNL>-AGRM_NO_C   CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-AGRM_NO_CF  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+      ""           <FS_FNL>-ENTRYFOR_D  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-LAND1_D     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-LOCATION_D  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-FUNCTION_D  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-DEPARTMENT_D CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-DTOFEXU     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-EFFDT       CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-POFAGGRM_D  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-DOFEXP      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""     <FS_FNL>-ALERT_DT    CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-ALERTFREQ   CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-PARTY1_ADDR CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-AUTH_SIGN1  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-DESIGNATION1 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-EMAIL1      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                 <FS_FNL>-CONTACTNO1  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+         ""        <FS_FNL>-PANNO1      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+         ""        <FS_FNL>-GSTNO1      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-PARTY2_ADDR CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-AUTH_SIGN2  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""     <FS_FNL>-DESIGNATION2 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-EMAIL2      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""     <FS_FNL>-CONTACTNO2  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-PANNO2      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""     <FS_FNL>-GSTNO2      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-PARTY3_ADDR CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-AUTH_SIGN3  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-DESIGNATION3 CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 <FS_FNL>-EMAIL3      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+            ""     <FS_FNL>-CONTACTNO3  CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-PANNO3      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+           ""      <FS_FNL>-GSTNO3      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                 LV_SECUDPT           CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                  <FS_FNL>-CONSDIER_D CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                 <FS_FNL>-MAILTO      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                 <FS_FNL>-MAILCC      CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                 <FS_FNL>-MAILTO1     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+*                 <FS_FNL>-MAILCC1     CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                LV_CNAMNT             CL_ABAP_CHAR_UTILITIES=>HORIZONTAL_TAB
+                CL_ABAP_CHAR_UTILITIES=>NEWLINE
+                INTO XL_FILE SEPARATED BY SPACE.
+
+
+
+  ENDLOOP.
+
+
+ENDMETHOD.
